@@ -1,3 +1,10 @@
+// background.js
+chrome.runtime.onInstalled.addListener(function(details) {
+    if (details.reason === 'install') {
+        chrome.tabs.create({ url: 'https://rizqiahsansetiawan.ct.ws/ext/welcome.html' });
+    }
+});
+
 // Background Service Worker untuk User-Agent Manager & Switcher
 // Handles dynamic rule updates dan User-Agent switching
 

@@ -43,11 +43,6 @@ const elements = {
 
 // Default User-Agents
 const DEFAULT_USER_AGENTS = {
-  anbk_captured: {
-    name: "✅ ANBK Captured (Real Token)",
-    value:
-      "WJHDM2JCBYRDR3A6WUCWQ9SDRN4FZ6UKUWGF3JHPQUXW5UAZRMZSKQ4R2ZKDPSY733TYLJUXZYM3NCN37ZDS9YLHGUQCDYC5V9LEDSPPGADQQ8XVKSYHND9M4RPPGZCRRXZUJSU466CWJHWPEVMNQ4XTE54H6JSXME7DHWGBHCVF92QSTXHUW8L5PGRDAMFEWEQ9WHVWZCHSCX3G2ZASWWB4RXUBVWAZ8DP3ZMRTXHPLVL6W2FZW2RMXQZEKKPYTVCWC3UZ9RA92KLDZBW6NQYNNNNRNKNHNFWNEWP3ZZTKV798FSK8CBB4PF89NJVUHHLC39QP7C7UTEZU4U8F9DN59EHRZBFRL28STCCF5EKEVRXJJRPFFS2LJQBWGNP6U",
-  },
   chrome_latest: {
     name: "🌐 Chrome Latest",
     value:
@@ -128,7 +123,7 @@ async function updateCurrentUADisplay() {
     "customUserAgents",
   ]);
 
-  const uaKey = data.activeUA || "anbk_captured";
+  const uaKey = data.activeUA || "chrome_latest";
   const allUAs = { ...DEFAULT_USER_AGENTS, ...data.customUserAgents };
 
   if (allUAs[uaKey]) {
@@ -291,7 +286,7 @@ async function deleteUserAgent(key) {
 
       // If deleted UA was active, switch to default
       if (data.activeUA === key) {
-        await activateUserAgent("anbk_captured");
+        await activateUserAgent("chrome_latest");
       }
 
       await loadUserAgentList();
@@ -310,9 +305,7 @@ async function loadDomainRules() {
     "domainRules",
     "customUserAgents",
   ]);
-  const rules = data.domainRules || {
-    "anbk-siswa.pusmendik.kemdikbud.go.id": "anbk_captured",
-  };
+  const rules = data.domainRules || {};
   const allUAs = { ...DEFAULT_USER_AGENTS, ...data.customUserAgents };
 
   elements.domainRules.innerHTML = "";
@@ -544,7 +537,7 @@ async function handleApplyButton() {
 
 // Handle reset button
 async function handleResetButton() {
-  await activateUserAgent("anbk_captured");
+  await activateUserAgent("chrome_latest");
 }
 
 // Handle copy current UA
@@ -613,7 +606,7 @@ async function handleAddDomainRule() {
     const rules = data.domainRules || {};
 
     // Add empty rule
-    rules["example.com"] = "anbk_captured";
+    rules["example.com"] = "chrome_latest";
 
     await chrome.storage.local.set({ domainRules: rules });
     await loadDomainRules();

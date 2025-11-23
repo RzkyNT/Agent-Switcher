@@ -5,7 +5,6 @@ console.log('[UA Manager] Background service worker started');
 
 // Default User-Agents presets
 const DEFAULT_USER_AGENTS = {
-  'anbk_captured': 'WJHDM2JCBYRDR3A6WUCWQ9SDRN4FZ6UKUWGF3JHPQUXW5UAZRMZSKQ4R2ZKDPSY733TYLJUXZYM3NCN37ZDS9YLHGUQCDYC5V9LEDSPPGADQQ8XVKSYHND9M4RPPGZCRRXZUJSU466CWJHWPEVMNQ4XTE54H6JSXME7DHWGBHCVF92QSTXHUW8L5PGRDAMFEWEQ9WHVWZCHSCX3G2ZASWWB4RXUBVWAZ8DP3ZMRTXHPLVL6W2FZW2RMXQZEKKPYTVCWC3UZ9RA92KLDZBW6NQYNNNNRNKNHNFWNEWP3ZZTKV798FSK8CBB4PF89NJVUHHLC39QP7C7UTEZU4U8F9DN59EHRZBFRL28STCCF5EKEVRXJJRPFFS2LJQBWGNP6U',
   'chrome_latest': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
   'edge_latest': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0',
   'firefox_latest': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
@@ -31,11 +30,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 async function initializeStorage() {
   const defaultData = {
     userAgents: DEFAULT_USER_AGENTS,
-    activeUA: 'anbk_captured',
+    activeUA: 'chrome_latest',
     customUserAgents: {},
-    domainRules: {
-      'anbk-siswa.pusmendik.kemdikbud.go.id': 'anbk_captured'
-    },
+    domainRules: {},
     autoApply: true,
     enabled: true
   };
@@ -56,7 +53,7 @@ async function loadAndApplyUserAgent() {
     }
 
     const allUserAgents = { ...DEFAULT_USER_AGENTS, ...data.userAgents, ...data.customUserAgents };
-    const userAgent = allUserAgents[data.activeUA] || DEFAULT_USER_AGENTS.anbk_captured;
+    const userAgent = allUserAgents[data.activeUA] || DEFAULT_USER_AGENTS.chrome_latest;
 
     console.log('[UA Manager] Applying User-Agent:', data.activeUA);
     await applyUserAgent(userAgent, data.domainRules || {});
@@ -218,7 +215,7 @@ async function handleGetCurrentUA() {
   try {
     const data = await chrome.storage.local.get(['activeUA', 'userAgents', 'customUserAgents']);
     const allUserAgents = { ...DEFAULT_USER_AGENTS, ...data.userAgents, ...data.customUserAgents };
-    return allUserAgents[data.activeUA] || DEFAULT_USER_AGENTS.anbk_captured;
+    return allUserAgents[data.activeUA] || DEFAULT_USER_AGENTS.chrome_latest;
   } catch (error) {
     console.error('[UA Manager] Error getting current UA:', error);
     throw error;

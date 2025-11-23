@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "User-Agent Manager & Switcher - ANBK Edition",
+  "name": "User-Agent Manager & Switcher",
   "version": "2.0",
-  "description": "Manage, switch, and customize User-Agent strings with presets. Special edition for ANBK access.",
+  "description": "Manage, switch, and customize User-Agent strings with presets.",
   "permissions": [
     "storage",
     "declarativeNetRequest",

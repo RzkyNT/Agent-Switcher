@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User-Agent Manager & Switcher</title>
+    <style>
+            * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 100vh;
+        min-height: 400px;
+        font-family: "SF Pro Display", "Segoe UI", Tahoma, sans-serif;
+        background: linear-gradient(145deg, #000000, #000000, #fbd38d);
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        color: #fff;
+      }
+
+      /* === Glass Container === */
+      .container {
+        width: 100%;
+        max-width: 600px;
+        border-radius: 25px;
+        padding: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(25px) saturate(180%);
+        -webkit-backdrop-filter: blur(25px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        transition: all 0.3s ease;
+      }
+
+      .container:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      /* === Header === */
+      .header {
+        text-align: center;
+        padding: 15px 0 25px 0;
+      }
+
+      .header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        background: linear-gradient(90deg, #a5b4fc, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .header p {
+        font-size: 13px;
+        opacity: 0.8;
+      }
+
+      /* === Tabs === */
+      .tabs {
+        display: flex;
+        margin-bottom: 25px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 12px 0;
+        text-align: center;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.3s ease;
+      }
+
+      .tab.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        backdrop-filter: blur(15px);
+      }
+
+      .tab:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      /* === Content Area === */
+      .tab-content {
+        display: none;
+        animation: fadeIn 0.4s ease;
+      }
+      .tab-content.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* === Cards & Sections === */
+      .section {
+        margin-bottom: 25px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      .section-title {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #e9d8fd;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+      }
+
+      /* === Buttons === */
+      .btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        backdrop-filter: blur(15px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: #fff;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #22c55e, #4ade80);
+        color: white;
+      }
+
+      .btn:hover {
+        transform: scale(1.03);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      /* === Inputs === */
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 14px;
+        font-family: "SF Pro Text", sans-serif;
+        transition: all 0.3s;
+        outline: none;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: #a5b4fc;
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      option {
+        color: #333;
+      }
+
+      /* === Current UA Box === */
+      .current-ua {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .current-ua-title {
+        font-size: 13px;
+        opacity: 0.8;
+        margin-bottom: 8px;
+      }
+
+      .current-ua-value {
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.12);
+        padding: 10px;
+        border-radius: 8px;
+        color: #fefefe;
+        word-break: break-all;
+      }
+
+      /* === Status Badge === */
+      .badge {
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        background: rgba(255, 255, 255, 0.2);
+        color: #22c55e;
+      }
+
+      /* === Footer === */
+      .footer {
+        text-align: center;
+        font-size: 11px;
+        opacity: 0.7;
+        margin-top: 25px;
+      }
+
+      .footer a {
+        color: #c4b5fd;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .tabs {
+        display: flex;
+        border-bottom: 2px solid #e0e0e0;
+        margin-bottom: 20px;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s;
+        position: relative;
+      }
+
+      .tab:hover {
+        color: #ffffff;
+        background: rgba(102, 126, 234, 0.05);
+      }
+
+      .tab.active {
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #667eea;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section {
+        margin-bottom: 20px;
+      }
+
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .ua-select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e011;
+        border-radius: 8px;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.068);
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 15px;
+      }
+
+      .ua-select:hover {
+        border-color: #667eea;
+      }
+
+      .ua-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 10px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+      }
+
+      .btn-secondary:hover {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-danger {
+        background: #ff4757;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #ee5a6f;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+      }
+
+      .btn-success {
+        background: #2ed573;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #7bed9f;
+      }
+
+      .status {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: none;
+        font-size: 13px;
+        animation: slideIn 0.3s;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .status.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .status.info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+      }
+
+      .input-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+      }
+
+      .input-group input,
+      .input-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .input-group textarea {
+        resize: vertical;
+        min-height: 80px;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+      }
+
+      .input-group input:focus,
+      .input-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .ua-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .ua-item {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .ua-item:hover {
+        border-color: #667eea;
+        background: white;
+      }
+
+      .ua-item.active {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+        border-color: #667eea;
+      }
+
+      .ua-item-info {
+        flex: 1;
+      }
+
+      .ua-item-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+      }
+
+      .ua-item-value {
+        font-size: 11px;
+        color: #666;
+        word-break: break-all;
+        font-family: "Courier New", monospace;
+      }
+
+      .ua-item-actions {
+        display: flex;
+        gap: 5px;
+      }
+
+      .btn-small {
+        padding: 6px 12px;
+        font-size: 11px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+      }
+
+      .btn-small.active {
+        background: #2ed573;
+        color: white;
+      }
+
+      .btn-small.inactive {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-small.delete {
+        background: #ff4757;
+        color: white;
+      }
+
+      .btn-small:hover {
+        transform: scale(1.05);
+      }
+
+      .toggle-switch {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border: 2px solid #e0e0e0;
+      }
+
+      .toggle-switch label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .switch {
+        position: relative;
+        width: 50px;
+        height: 26px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 26px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #2ed573;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(24px);
+      }
+
+      .info-box {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        color: #856404;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        margin-bottom: 15px;
+      }
+
+      .domain-rules {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .domain-rule-item {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        align-items: center;
+      }
+
+      .domain-rule-item input {
+        flex: 1;
+        padding: 8px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+
+      .domain-rule-item select {
+        flex: 1;
+        padding: 8px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+
+      .btn-icon {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #0000003f;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+      }
+
+      .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+      }
+
+      .empty-state-text {
+        font-size: 14px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-left: 8px;
+      }
+
+      .badge-success {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .badge-warning {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .badge-primary {
+        background: rgba(102, 126, 234, 0.2);
+        color: #667eea;
+      }
+       /* Hide scrollbar but keep scroll functionality */
+      ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>🔧 User-Agent Manager & Switcher</h2>
+        <p>ANBK Edition - Manage and switch User-Agent strings</p>
+      </div>
+
+      <div class="content">
+        <!-- Status Message -->
+        <div id="status" class="status"></div>
+
+        <!-- Enable/Disable Toggle -->
+        <div class="toggle-switch">
+          <label>
+            Extension Status
+            <span id="statusBadge" class="badge badge-success">ENABLED</span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="extensionToggle" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab active" data-tab="switcher">🔄 Switcher</button>
+          <button class="tab" data-tab="manager">📝 Manager</button>
+          <button class="tab" data-tab="settings">⚙️ Settings</button>
+        </div>
+
+        <!-- Tab 1: Switcher -->
+        <div id="switcher" class="tab-content active">
+          <div class="section">
+            <div class="section-title">Current User-Agent</div>
+            <div class="current-ua">
+              <div class="current-ua-title">
+                Active UA: <span id="currentUAName">Loading...</span>
+              </div>
+              <div class="current-ua-value" id="currentUAValue">Loading...</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Quick Switch</div>
+            <select id="userAgentSelect" class="ua-select">
+              <option value="">-- Select User-Agent --</option>
+            </select>
+            <button id="applyBtn" class="btn btn-secondary">
+              ✓ Apply User-Agent
+            </button>
+            <button id="resetBtn" class="btn btn-secondary">
+              ↻ Reset to Default
+            </button>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Quick Actions</div>
+            <button id="copyCurrentBtn" class="btn btn-secondary">
+              📋 Copy Current UA
+            </button>
+            <button id="refreshBtn" class="btn btn-secondary">
+              🔄 Refresh Rules
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Manager -->
+        <div id="manager" class="tab-content">
+          <div class="section">
+            <div class="section-title">Add Custom User-Agent</div>
+            <div class="input-group">
+              <label>Name / Label</label>
+              <input
+                type="text"
+                id="customUAName"
+                placeholder="e.g., My Custom UA"
+              />
+            </div>
+            <div class="input-group">
+              <label>User-Agent String</label>
+              <textarea
+                id="customUAValue"
+                placeholder="Paste User-Agent string here..."
+              ></textarea>
+            </div>
+            <button id="addCustomUABtn" class="btn btn-success">
+              + Add User-Agent
+            </button>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Saved User-Agents</div>
+            <div id="userAgentList" class="ua-list">
+              <div class="empty-state">
+                <div class="empty-state-icon">📦</div>
+                <div class="empty-state-text">Loading User-Agents...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Settings -->
+        <div id="settings" class="tab-content">
+          <div class="section">
+            <div class="section-title">Domain-Specific Rules</div>
+            <div class="info-box">
+              💡 Set different User-Agents for specific domains. Higher priority
+              than global UA.
+            </div>
+            <div id="domainRules" class="domain-rules">
+              <!-- Domain rules will be added here dynamically -->
+            </div>
+            <button id="addDomainRuleBtn" class="btn btn-secondary">
+              + Add Domain Rule
+            </button>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Advanced Options</div>
+            <div class="toggle-switch">
+              <label>Auto-apply on browser start</label>
+              <label class="switch">
+                <input type="checkbox" id="autoApplyToggle" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Import / Export</div>
+            <button id="exportBtn" class="btn btn-secondary">
+              💾 Export Settings
+            </button>
+            <button id="importBtn" class="btn btn-secondary">
+              📂 Import Settings
+            </button>
+            <input
+              type="file"
+              id="importFile"
+              accept=".json"
+              style="display: none"
+            />
+          </div>
+
+          <div class="section">
+            <div class="section-title">Danger Zone</div>
+            <button id="resetAllBtn" class="btn btn-danger">
+              🗑️ Reset All Settings
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>User-Agent Manager & Switcher v2.0 - ANBK Edition</p>
+        <p>Made with ❤️ for easier ANBK access</p>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

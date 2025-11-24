@@ -9,7 +9,7 @@
     "declarativeNetRequestFeedback",
     "tabs",
     "activeTab",
-    "windows"
+    "scripting"
   ],
   "host_permissions": ["<all_urls>"],
   "action": {

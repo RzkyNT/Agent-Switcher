@@ -20,6 +20,7 @@ const elements = {
   userAgentSelect: document.getElementById("userAgentSelect"),
   applyBtn: document.getElementById("applyBtn"),
   resetBtn: document.getElementById("resetBtn"),
+  fullscreenBtn: document.getElementById("fullscreenBtn"),
   currentUAName: document.getElementById("currentUAName"),
   currentUAValue: document.getElementById("currentUAValue"),
   copyCurrentBtn: document.getElementById("copyCurrentBtn"),
@@ -452,6 +453,9 @@ function setupEventListeners() {
   // Reset button
   elements.resetBtn.addEventListener("click", handleResetButton);
 
+  // Fullscreen button
+  elements.fullscreenBtn.addEventListener("click", handleFullscreenButton);
+
   // Copy current UA
   elements.copyCurrentBtn.addEventListener("click", handleCopyCurrentUA);
 
@@ -538,6 +542,18 @@ async function handleApplyButton() {
 // Handle reset button
 async function handleResetButton() {
   await activateUserAgent("chrome_latest");
+}
+
+// Handle Fullscreen button
+async function handleFullscreenButton() {
+  try {
+    const currentWindow = await chrome.windows.getCurrent();
+    await chrome.windows.update(currentWindow.id, { state: "fullscreen" });
+    showStatus("✓ Entered fullscreen mode!", "success");
+  } catch (error) {
+    console.error("[UA Manager Popup] Error entering fullscreen:", error);
+    showStatus("Error entering fullscreen: " + error.message, "error");
+  }
 }
 
 // Handle copy current UA

@@ -547,9 +547,13 @@ async function handleResetButton() {
 // Handle Fullscreen button
 async function handleFullscreenButton() {
   try {
-    const currentWindow = await chrome.windows.getCurrent();
-    await chrome.windows.update(currentWindow.id, { state: "fullscreen" });
-    showStatus("✓ Entered fullscreen mode!", "success");
+    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (activeTab && activeTab.windowId) {
+      await chrome.windows.update(activeTab.windowId, { state: "fullscreen" });
+      showStatus("✓ Entered fullscreen mode!", "success");
+    } else {
+      throw new Error("Could not find active tab or window ID.");
+    }
   } catch (error) {
     console.error("[UA Manager Popup] Error entering fullscreen:", error);
     showStatus("Error entering fullscreen: " + error.message, "error");

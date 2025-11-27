@@ -85,7 +85,7 @@ async function applyUserAgent(userAgent, domainRules = {}) {
 
     // Create new rules
     const newRules = [];
-    let ruleId = 1;
+    let ruleId = 1000;
 
     // Rule for all URLs (global)
     newRules.push({
@@ -97,7 +97,7 @@ async function applyUserAgent(userAgent, domainRules = {}) {
           {
             header: "User-Agent",
             operation: "set",
-            value: userAgent
+            value: String(userAgent)
           }
         ]
       },
@@ -122,7 +122,7 @@ async function applyUserAgent(userAgent, domainRules = {}) {
             {
               header: "User-Agent",
               operation: "set",
-              value: domainUA
+              value: String(domainUA)
             }
           ]
         },

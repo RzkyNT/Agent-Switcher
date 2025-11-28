@@ -1,0 +1,41 @@
+background.js:11 [UA Manager] Background service worker started
+background.js:25 [UA Manager] Extension installed/updated: update
+background.js:65 [UA Manager] Applying User-Agent: custom_tb_mod_apk
+background.js:141 [UA Manager] User-Agent rules applied successfully. Total rules: 2
+background.js:235 [UA Manager] Storage changed: ['domainRules']
+background.js:65 [UA Manager] Applying User-Agent: custom_tb_mod_apk
+background.js:168 [UA Manager] Message received: applyUserAgent
+background.js:141 [UA Manager] User-Agent rules applied successfully. Total rules: 1
+background.js:141 [UA Manager] User-Agent rules applied successfully. Total rules: 1
+background.js:213 [UA Manager] User-Agent applied: custom_tb_mod_apk
+background.js:235 [UA Manager] Storage changed: ['domainRules']
+background.js:65 [UA Manager] Applying User-Agent: custom_tb_mod_apk
+background.js:141 [UA Manager] User-Agent rules applied successfully. Total rules: 2
+background.js:235 [UA Manager] Storage changed: ['domainRules']
+background.js:65 [UA Manager] Applying User-Agent: custom_tb_mod_apk
+background.js:168 [UA Manager] Message received: applyUserAgent
+background.js:141 [UA Manager] User-Agent rules applied successfully. Total rules: 2
+background.js:144 [UA Manager] Error applying User-Agent: Error: Rule with id 1 does not have a unique ID.
+applyUserAgent @ background.js:144
+await in applyUserAgent
+handleApplyUserAgent @ background.js:211
+await in handleApplyUserAgent
+(anonymous) @ background.js:171
+background.js:215 [UA Manager] Error in handleApplyUserAgent: Error: Rule with id 1 does not have a unique ID.
+handleApplyUserAgent @ background.js:215
+await in handleApplyUserAgent
+(anonymous) @ background.js:171
+background.js:235 [UA Manager] Storage changed: ['domainRules']
+background.js:65 [UA Manager] Applying User-Agent: custom_tb_mod_apk
+background.js:168 [UA Manager] Message received: applyUserAgent
+background.js:141 [UA Manager] User-Agent rules applied successfully. Total rules: 2
+background.js:144 [UA Manager] Error applying User-Agent: Error: Rule with id 1 does not have a unique ID.
+applyUserAgent @ background.js:144
+await in applyUserAgent
+handleApplyUserAgent @ background.js:211
+await in handleApplyUserAgent
+(anonymous) @ background.js:171
+background.js:215 [UA Manager] Error in handleApplyUserAgent: Error: Rule with id 1 does not have a unique ID.
+handleApplyUserAgent @ background.js:215
+await in handleApplyUserAgent
+(anonymous) @ background.js:171
